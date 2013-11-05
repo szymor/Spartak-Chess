@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Spartak Chess
+Comment=Game of Chess based on Stockfish engine
+Exec=spartak-chess
+Terminal=false
+Type=Application
+StartupNotify=true
+Icon=icon
+Categories=games;

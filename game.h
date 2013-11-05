@@ -93,4 +93,6 @@ protected:
 	static const char* difficulty_names[];
 };
 
+static void getConfigPath();
+
 #endif//__GAME_H__

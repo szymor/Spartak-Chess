@@ -24,6 +24,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "game.h"
 #include "io.h"
 #include "ui/board.h"
+#ifdef WITH_HOME_DIR
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#endif//WITH_HOME_DIR
 
 namespace xUi
 {
@@ -94,6 +99,7 @@ void eGame::Init()
 	move_status->Create();
 	move_status->Bound(eRect(ePoint2(240, 240 - xUi::eFont::CHAR_H), ePoint2(320, xUi::eFont::CHAR_H)));
 	Application::initialize();
+	getConfigPath();
 	New();
 	Load();
 }
@@ -478,7 +484,29 @@ void eGame::CloseDialog(xUi::eDialog** d)
 	*d = NULL;
 }
 using namespace std;
-static const char* config_name = "spartak-chess.cfg";
+static char config_name[100];
+//static const char* config_name = "spartak-chess.cfg";
+
+static void getConfigPath()
+{
+#ifdef WITH_HOME_DIR
+	if(strlen(getenv("HOME")) > 100 - strlen("/.spartak/spartak-chess.cfg"))
+	{
+		// $HOME path is too long, change the config location to PWD
+		strcpy(config_name, "spartak-chess.cfg");
+	}
+	else
+	{
+		strcpy(config_name, getenv("HOME"));
+		strcat(config_name, "/.spartak");
+		mkdir(config_name, 0755); // create $HOME/.spartak if it doesn't exist
+		strcat(config_name, "/spartak-chess.cfg");
+	}
+#else
+	strcpy(config_name, "spartak-chess.cfg");
+#endif//WITH_HOME_DIR
+}
+
 static string GetLine(FILE* f)
 {
 	char l[4096];

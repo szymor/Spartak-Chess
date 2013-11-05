@@ -22,6 +22,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <SDL.h>
 #include "../game.h"
 
+#ifdef SDL_USE_JOYSTICK
+static const int JOY_DEADZONE = 2000;
+int joyAxisXreleased = 1;
+int joyAxisYreleased = 1;
+#endif//SDL_USE_JOYSTICK
+
 void ProcessEvent(eGame* game, const SDL_Event& e)
 {
 	switch(e.type)
@@ -41,6 +47,47 @@ void ProcessEvent(eGame* game, const SDL_Event& e)
 		default: break;
 		}
 		break;
+#ifdef SDL_USE_JOYSTICK
+	case SDL_JOYAXISMOTION:
+		switch(e.jaxis.axis)
+		{
+			case 0:
+				if(e.jaxis.value < -JOY_DEADZONE && joyAxisXreleased && joyAxisYreleased)
+				{
+					game->Command('l');
+					joyAxisXreleased = 0;
+				}
+				if(e.jaxis.value > JOY_DEADZONE && joyAxisXreleased && joyAxisYreleased)
+				{
+					game->Command('r');
+					joyAxisXreleased = 0;
+				}
+				if(e.jaxis.value > -JOY_DEADZONE && e.jaxis.value < JOY_DEADZONE)
+				{
+					joyAxisXreleased = 1;
+				}
+			break;
+			case 1:
+				if(e.jaxis.value < -JOY_DEADZONE && joyAxisXreleased && joyAxisYreleased)
+				{
+					game->Command('u');
+					joyAxisYreleased = 0;
+				}
+				if(e.jaxis.value > JOY_DEADZONE && joyAxisXreleased && joyAxisYreleased)
+				{
+					game->Command('d');
+					joyAxisYreleased = 0;
+				}
+				if(e.jaxis.value > -JOY_DEADZONE && e.jaxis.value < JOY_DEADZONE)
+				{
+					joyAxisYreleased = 1;
+				}
+			break;
+
+			default: break;
+		}
+		break;
+#endif//SDL_USE_JOYSTICK
 	default:
 		break;
 	}
