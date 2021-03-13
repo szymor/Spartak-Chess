@@ -39,8 +39,13 @@ void ProcessEvent(eGame* game, const SDL_Event& e)
 		case SDLK_RIGHT:	game->Command('r');		break;
 		case SDLK_UP:		game->Command('u');		break;
 		case SDLK_DOWN:		game->Command('d');		break;
+#ifdef BITTBOY
+		case SDLK_LALT:		game->Command('a');		break;
+		case SDLK_LCTRL:	game->Command('b');		break;
+#else
 		case SDLK_LCTRL:	game->Command('a');		break;
 		case SDLK_LALT:		game->Command('b');		break;
+#endif
 		case SDLK_TAB:		game->Command('n');		break;
 		case SDLK_BACKSPACE:game->Command('g');		break;
 		case SDLK_ESCAPE:	game->Command('f');		break;

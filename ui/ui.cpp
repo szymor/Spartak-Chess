@@ -60,9 +60,15 @@ bool ReadPNG(const char* name, void* buffer, dword w, dword h, byte channels)
 	png_init_io(png_ptr, f);
 	png_set_sig_bytes(png_ptr, 8);
 	png_read_info(png_ptr, info_ptr);
-	if(info_ptr->width != w || info_ptr->height != h ||
-		info_ptr->bit_depth != 8 || info_ptr->channels != channels ||
-		info_ptr->rowbytes != info_ptr->channels*info_ptr->width)
+	png_uint_32 ipwidth = png_get_image_width(png_ptr, info_ptr);
+	png_uint_32 ipheight = png_get_image_height(png_ptr, info_ptr);
+	png_byte ipbitdepth = png_get_bit_depth(png_ptr, info_ptr);
+	png_byte ipchannels = png_get_channels(png_ptr, info_ptr);
+	png_uint_32 iprowbytes = png_get_rowbytes(png_ptr, info_ptr);
+
+	if(ipwidth != w || ipheight != h ||
+		ipbitdepth != 8 || ipchannels != channels ||
+		iprowbytes != ipchannels*ipwidth)
 	{
 		png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
 		fclose(f);
@@ -71,7 +77,7 @@ bool ReadPNG(const char* name, void* buffer, dword w, dword h, byte channels)
 	png_byte** row_pointers = new png_byte*[h];
 	for(dword y = 0; y < h; ++y)
 	{
-		row_pointers[y] = (byte*)buffer + y*info_ptr->rowbytes;
+		row_pointers[y] = (byte*)buffer + y*iprowbytes;
 	}
 	png_read_image(png_ptr, row_pointers);
 	png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
